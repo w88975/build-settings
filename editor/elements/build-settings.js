@@ -16,13 +16,17 @@ Polymer({
             {name:"Builder.js",value:"Builder.js"},
             {name:"Builder.Platform",value:"Builder.Platform"},
         ],
-        defaultPlatformConfig: "Builder.Platform",
-        defaultPlatform: "Mobile",
-        isDebug: true,
-        defaultScene: "",
-        defaultBuildPath: "",
-        projectName: "",
-        buildSceneList: [], //scene list for buid
+
+        settings: {
+            defaultPlatformConfig: "Builder.Platform",
+            defaultPlatform: "Mobile",
+            isDebug: true,
+            defaultScene: "",
+            defaultBuildPath: "",
+            projectName: "",
+            buildSceneList: [],
+            sceneList: [],
+        },
     },
 
     created: function () {
@@ -32,16 +36,17 @@ Polymer({
         this.isInvalidName = false;
         this.isInvalidPath = false;
         var loadFile = false;
+        this.onMouseOn = false;
 
         this.loadConfig(function (data,err,errMsg) {
             if (!err) {
-                this.isDebug = data.isDebug;
-                this.defaultScene = data.defaultScene;
-                this.defaultBuildPath = data.BuildPath;
-                this.defaultPlatform = data.platform;
-                this.defaultPlatformConfig = data.platformConfig;
-                this.projectName = data.projectName;
-                this.sceneList = data.sceneList;
+                this.settings.isDebug = data.isDebug;
+                this.settings.defaultScene = data.defaultScene;
+                this.settings.defaultBuildPath = data.defaultBuildPath;
+                this.settings.defaultPlatform = data.defaultPlatform;
+                this.settings.defaultPlatformConfig = data.defaultPlatformConfig;
+                this.settings.projectName = data.projectName;
+                this.settings.sceneList = data.sceneList;
                 loadFile = true;
             }
             else {
@@ -51,62 +56,51 @@ Polymer({
         }.bind(this));
 
         if (!loadFile) {
-            this.projectName = Path.basename(projectPath);
-            this.defaultBuildPath = projectPath;
+            this.settings.projectName = Path.basename(projectPath);
+            this.settings.defaultBuildPath = projectPath;
         }
     },
 
     attached: function () {
         Fire.sendToCore('asset-db:build-settings:getLibrarylist');
         this.ipc.on('asset-db:build-settings:SceneList', function ( results ) {
-            this.sceneList = [];
+            this.settings.sceneList = [];
             for ( var i = 0; i < results.length; ++i ) {
                 var item = results[i];
-                this.sceneList.push( { name: item.url, value: item.uuid, noignore: true, } );
+                this.settings.sceneList.push( { name: item.url, value: item.uuid, noignore: true, } );
             }
-            this.defaultScene = this.sceneList[0].value;
+            this.settings.defaultScene = this.settings.sceneList[0].value;
         }.bind(this) );
     },
 
-    chooseDestPath: function () {
+    chooseDistPath: function () {
         dialog.showOpenDialog({ defaultPath: projectPath, properties: ['openDirectory', 'multiSelections' ]},function (res) {
             if (res) {
-                this.defaultBuildPath = res;
+                this.settings.defaultBuildPath = res;
             }
         }.bind(this));
     },
 
     selectChanged: function (event) {
-        for (var i = 0; i < this.sceneList.length; ++i) {
-            if (this.sceneList[i].value === this.defaultScene) {
-                this.sceneList[i].noignore = true;
+        for (var i = 0; i < this.settings.sceneList.length; ++i) {
+            if (this.settings.sceneList[i].value === this.defaultScene) {
+                this.settings.sceneList[i].noignore = true;
             }
         }
     },
 
     getBuildList: function () {
         var buildList = [];
-        for (var i = 0; i < this.sceneList.length; ++i) {
-            if (this.sceneList[i].noignore === true) {
-                buildList.push(this.sceneList[i].value);
+        for (var i = 0; i < this.settings.sceneList.length; ++i) {
+            if (this.settings.sceneList[i].noignore === true) {
+                buildList.push(this.settings.sceneList[i].value);
             }
         }
-        this.buildSceneList = buildList;
+        this.settings.buildSceneList = buildList;
     },
 
     saveConfig: function () {
-        var settings = {
-            projectName: this.projectName,
-            defaultScene: this.defaultScene,
-            platform: this.defaultPlatform,
-            platformConfig: this.defaultPlatformConfig,
-            BuildPath: this.defaultBuildPath,
-            isDebug: this.isDebug,
-            buildSceneList: this.buildSceneList,
-            sceneList: this.sceneList,
-        };
-
-        var settingsJson = JSON.stringify(settings, null, 2);
+        var settingsJson = JSON.stringify(this.settings, null, 2);
         Fs.writeFile(this.settingPath, settingsJson, 'utf8', function ( err ) {
             if ( err ) {
                 Fire.error( err.message );
@@ -135,7 +129,7 @@ Polymer({
     },
 
     pathInputBlurAction: function () {
-        if ( !Fs.existsSync(this.defaultBuildPath) || !Fs.statSync(this.defaultBuildPath).isDirectory() ) {
+        if ( !Fs.existsSync(this.settings.defaultBuildPath) || !Fs.statSync(this.settings.defaultBuildPath).isDirectory() ) {
             Fire.warn('Build Dir Not Eixsts');
             this.$.path.setAttribute("invalid","");
             this.isInvalidPath = true;
@@ -170,7 +164,7 @@ Polymer({
 
             // TODO build Action
 
-        } else {
+        }else {
             this.$.tip.style.display = "block";
             this.$.tip.animate([
                 { color: "white" },
@@ -183,7 +177,15 @@ Polymer({
         }
     },
 
-    closeAction: function () {
+    buildBtnMouseOver: function (event) {
+        this.onMouseOn = true;
+    },
+
+    buildBtnMouseOut: function () {
+        this.onMouseOn = false;
+    },
+
+    cancelAction: function () {
         window.close();
     },
 });
