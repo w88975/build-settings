@@ -32,7 +32,7 @@
 
         <div flex-row class="prop">
             <fire-ui-label flex-1>Enable Debug</fire-ui-label>
-            <fire-ui-checkbox flex-2 value="{{isDebug}}">Debug</fire-ui-checkbox>
+            <fire-ui-checkbox flex-2 value="{{isDebug}}"></fire-ui-checkbox>
         </div>
 
         <div flex-row class="prop">
@@ -49,7 +49,7 @@
             <fire-ui-label flex-1>Build Path</fire-ui-label>
             <div flex-row flex-2>
                 <fire-ui-text-input id="path" on-blur="{{pathInputBlurAction}}" placeholder="building path" value="{{defaultBuildPath}}" flex-4></fire-ui-text-input>
-                <fire-ui-button style="margin-left: 10px" on-click="{{chooseDestPath}}" >open...</fire-ui-button>
+                <fire-ui-button style="margin-left: 10px" on-click="{{chooseDestPath}}">Open...</fire-ui-button>
             </div>
         </div>
     </div>
