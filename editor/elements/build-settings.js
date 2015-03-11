@@ -163,6 +163,7 @@ Polymer({
             this.saveConfig();
 
             // TODO build Action
+            // 直接用this.settings取到配置信息的obj
 
         }else {
             this.$.tip.style.display = "block";
