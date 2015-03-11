@@ -7,12 +7,12 @@
         "main": "editor/main.js",
         "menus": [
             {
-                "path": "File/Build",
-                "message": "build-setting:open"
+                "path": "File/Build Settings",
+                "message": "build-settings:open"
             }
         ],
         "windows": {
-            "build-setting": {
+            "build-settings": {
                 "url": "editor/index.html",
                 "options": {
                     "title": "Build Settings",
@@ -20,7 +20,8 @@
                     "height": 520,
                     "min-width": 500,
                     "min-height": 500,
-                    "resizable": false
+                    "resizable": false,
+                    "always-on-top": true
                 }
             }
         }

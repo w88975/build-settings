@@ -68,7 +68,7 @@ Polymer({
         }.bind(this) );
     },
 
-    chooseDistPath: function () {
+    chooseDestPath: function () {
         dialog.showOpenDialog({ defaultPath: projectPath, properties: ['openDirectory', 'multiSelections' ]},function (res) {
             if (res) {
                 this.defaultBuildPath = res;
@@ -170,7 +170,7 @@ Polymer({
 
             // TODO build Action
 
-        }else {
+        } else {
             this.$.tip.style.display = "block";
             this.$.tip.animate([
                 { color: "white" },
@@ -183,7 +183,7 @@ Polymer({
         }
     },
 
-    cancelAction: function () {
+    closeAction: function () {
         window.close();
     },
 });

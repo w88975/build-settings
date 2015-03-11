@@ -1,103 +1,121 @@
-color-button-text = #bdbdbd
-color-button-bg = #4a4a4a
-color-border-normal = #4a4a4a - 50%
-color-border-focus = #0c70a6
+.title {
+    width: 100%
+    float: left
+    background-color: rgb(36,36,36)
+    font-size: 18px
+    line-height: 40px
+    padding-left: 15px
+    border-bottom: 1px solid rgb(66,66,66)
 
-:host {
-    .title {
-        width: 100%
-        height: 40px
-        float: left
-        background-color: rgb(36,36,36)
-        font-size: 18px
-        line-height: 40px
-        padding-left: 15px
-        border-bottom: 1px solid rgb(66,66,66)
-        .tip {
-            color: red
-            font-size: 12px
-            float: right
-            padding-right: 40px
-            display: none
-        }
-    }
-
-    .section{
-        width: 100%
-        height: auto
-        float: left
-    }
-
-    .prop {
-        height: 24px
-        margin-left: 15px
+    h2 {
         margin-top: 10px
+        margin-bottom: 10px
+    }
+
+    .tip {
+        color: red
+        font-size: 12px
+        float: right
+        padding-right: 40px
+        display: none
+    }
+}
+
+.section{
+    width: 100%
+    height: auto
+    float: left
+}
+
+.prop {
+    height: 24px
+    margin-left: 15px
+    margin-top: 10px
+    margin-right: 15px
+    padding-bottom: 10px
+    border-bottom: 1px solid rgb(40,40,40)
+    fire-ui-label {
+        font-size: 13px
+    }
+}
+
+.itemBox {
+    height: 100px
+    max-height: 100px
+    overflow: hidden
+    margin-top: 5px
+}
+
+.border {
+    border: 1px solid rgb(153, 153, 153)
+    position: absolute
+    max-height: 100px
+    left: 191px
+    width: 296px
+
+}
+
+.items {
+    min-height: 80px
+    border: 1px solid rgb(153, 153, 153)
+    overflow-x: hidden
+    overflow-y: auto
+
+    fire-ui-checkbox {
+        margin: 3px
+    }
+}
+
+.btn-group {
+    width: 100%
+    height: auto
+    float: left
+    margin-top: 15px
+    margin-bottom: 5px
+
+    button {
+        float: right
+        width: 80px
+        height: 30px
         margin-right: 15px
-        padding-bottom: 10px
-        border-bottom: 1px solid rgb(40,40,40)
-        fire-ui-label {
-            font-size: 13px
-        }
-    }
+        border: 1px solid #252525
+        border-radius: 2px
+        padding: 4px 8px
+        cursor: pointer
 
-    .itemBox {
-        height: 100px
-        max-height: 100px
-        overflow: hidden
-        margin-top: 5px
-    }
+        color: #bdbdbd
 
-    .border {
-        border: 1px solid rgb(153, 153, 153)
-        position: absolute
-        max-height: 100px
-        left: 191px
-        width: 296px
-
-    }
-
-    .items {
-        height: 80px
-        border: 1px solid rgb(153, 153, 153)
-        overflow-x: hidden
-        overflow-y: auto
-        fire-ui-checkbox {
-            margin: 3px
-        }
-    }
-
-    .btn-group {
-        width: 100%
-        height: auto
-        float: left
-
-        button {
-            float: right
-            width: 80px
-            height: 30px
-            margin: 15px
-            background-color: #4a4a4a
-            color: #bdbdbd
-            margin-top: 20px
-            border: 1px solid #252525
-            border-radius: 2px
-            padding: 4px 8px
-            cursor: pointer
+        &:focus {
             outline: none
+        }
+
+        &.green {
+            background-color: #090
 
             &:hover {
-                border-color: color-border-normal
-                background-color: color-button-bg + 10%
-            }
-
-            &:focus {
-                outline: none
+                background-color: #090 + 10%
             }
 
             &:active {
-                background-color: color-button-bg - 10%
-                color: color-button-text - 10%
+                background-color: #090 - 10%
+            }
+        }
+
+        &.red {
+            background-color: #900
+
+            &:hover {
+                background-color: #900 + 10%
+            }
+
+            &:active {
+                background-color: #900 - 10%
             }
         }
     }
+}
+
+fire-ui-label {
+    text-align: right
+    margin-right: 20px
 }

@@ -2,8 +2,8 @@ var Url = require('fire-url');
 
 module.exports = {
     load: function (context) {
-        context.on('build-setting:open', function () {
-            context.openWindow('build-setting');
+        context.on('build-settings:open', function () {
+            context.openWindow('build-settings');
         });
 
         context.on('asset-db:build-settings:getLibrarylist', function () {
