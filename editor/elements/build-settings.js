@@ -1,50 +1,53 @@
 var Remote = require('remote');
-var dialog = Remote.require('dialog');
 var Url = require('fire-url');
 var Fs = require('fire-fs');
-var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
 var Path = require('fire-path');
 
 Polymer({
-    publish: {
-        sceneList: [],
-        platform: [
-            {name:"PC",value:"PC"},
-            {name:"Mobile",value:"Mobile"},
-        ],
-        platformConfig: [
-            {name:"Builder.js",value:"Builder.js"},
-            {name:"Builder.Platform",value:"Builder.Platform"},
-        ],
+    platformList: [
+        {name:"PC",value:"PC"},
+        {name:"Mobile",value:"Mobile"},
+    ],
 
-        settings: {
-            defaultPlatformConfig: "Builder.Platform",
-            defaultPlatform: "Mobile",
-            isDebug: true,
-            defaultScene: "",
-            defaultBuildPath: "",
-            projectName: "",
-            buildSceneList: [],
-            sceneList: [],
-        },
+    platformConfigList: [
+        {name:"Builder.js",value:"Builder.js"},
+        {name:"Builder.Platform",value:"Builder.Platform"},
+    ],
+
+    observe: {
+        'settings.defaultScene': 'defaultSceneChanged',
+        'settings.buildPath': 'buildPathChanged',
+        'settings.projectName': 'projectNameChanged',
     },
+
+    isProjectNameValid: true,
+    isBuildPathValid: true,
+    hoverBuildButton: false,
 
     created: function () {
         this.ipc = new Fire.IpcListener();
 
-        this.settingPath = Path.join( projectPath, 'settings' ) + "/build-settings.json";
-        this.isInvalidName = false;
-        this.isInvalidPath = false;
-        var loadFile = false;
-        this.onMouseOn = false;
+        this.settings = {
+            projectName: "",
+            defaultScene: "",
+            sceneList: [],
+            isDebug: true,
+            platform: "Mobile",
+            platformConfig: "Builder.Platform",
+            buildPath: "",
+        };
 
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+        this.settingPath = Path.join( projectPath, 'settings' ) + "/build-settings.json";
+
+        var loadFile = false;
         this.loadConfig(function (data,err,errMsg) {
             if (!err) {
                 this.settings.isDebug = data.isDebug;
                 this.settings.defaultScene = data.defaultScene;
-                this.settings.defaultBuildPath = data.defaultBuildPath;
-                this.settings.defaultPlatform = data.defaultPlatform;
-                this.settings.defaultPlatformConfig = data.defaultPlatformConfig;
+                this.settings.buildPath = data.buildPath;
+                this.settings.platform = data.platform;
+                this.settings.platformConfig = data.platformConfig;
                 this.settings.projectName = data.projectName;
                 this.settings.sceneList = data.sceneList;
                 loadFile = true;
@@ -55,9 +58,9 @@ Polymer({
 
         }.bind(this));
 
-        if (!loadFile) {
+        if ( !loadFile ) {
             this.settings.projectName = Path.basename(projectPath);
-            this.settings.defaultBuildPath = projectPath;
+            this.settings.buildPath = projectPath;
         }
     },
 
@@ -67,36 +70,42 @@ Polymer({
             this.settings.sceneList = [];
             for ( var i = 0; i < results.length; ++i ) {
                 var item = results[i];
-                this.settings.sceneList.push( { name: item.url, value: item.uuid, noignore: true, } );
+                this.settings.sceneList.push( { name: item.url, value: item.uuid, ignore: false, } );
             }
             this.settings.defaultScene = this.settings.sceneList[0].value;
         }.bind(this) );
     },
 
+    defaultSceneChanged: function () {
+        for (var i = 0; i < this.settings.sceneList.length; ++i) {
+            if (this.settings.sceneList[i].value === this.settings.defaultScene) {
+                this.settings.sceneList[i].ignore = false;
+            }
+        }
+    },
+
+    buildPathChanged: function () {
+        this.isBuildPathValid = Fs.isDirSync(this.settings.buildPath);
+    },
+
+    projectNameChanged: function () {
+        if ( this.settings.projectName ) {
+            this.isProjectNameValid = true;
+            return;
+        }
+
+        this.isProjectNameValid = false;
+    },
+
     chooseDistPath: function () {
+        var dialog = Remote.require('dialog');
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+
         dialog.showOpenDialog({ defaultPath: projectPath, properties: ['openDirectory', 'multiSelections' ]},function (res) {
             if (res) {
-                this.settings.defaultBuildPath = res;
+                this.settings.buildPath = res;
             }
         }.bind(this));
-    },
-
-    selectChanged: function (event) {
-        for (var i = 0; i < this.settings.sceneList.length; ++i) {
-            if (this.settings.sceneList[i].value === this.defaultScene) {
-                this.settings.sceneList[i].noignore = true;
-            }
-        }
-    },
-
-    getBuildList: function () {
-        var buildList = [];
-        for (var i = 0; i < this.settings.sceneList.length; ++i) {
-            if (this.settings.sceneList[i].noignore === true) {
-                buildList.push(this.settings.sceneList[i].value);
-            }
-        }
-        this.settings.buildSceneList = buildList;
     },
 
     saveConfig: function () {
@@ -106,7 +115,6 @@ Polymer({
                 Fire.error( err.message );
                 return;
             }
-            Fire.log('Start Building...');
         }.bind(this));
     },
 
@@ -128,43 +136,20 @@ Polymer({
         });
     },
 
-    pathInputBlurAction: function () {
-        if ( !Fs.existsSync(this.settings.defaultBuildPath) || !Fs.statSync(this.settings.defaultBuildPath).isDirectory() ) {
-            Fire.warn('Build Dir Not Eixsts');
-            this.$.path.setAttribute("invalid","");
-            this.isInvalidPath = true;
-            return;
-        }
-        this.$.path.removeAttribute("invalid");
-        this.isInvalidPath = false;
-        if (!this.isInvalidName && !this.isInvalidPath) {
-            this.$.tip.style.display = "none";
-        }
-    },
-
-    projectNameBlurAction: function () {
-        if ( this.$.projName.value === "" ) {
-            Fire.warn('Invalid Project Name');
-            this.$.projName.setAttribute("invalid","");
-            this.isInvalidName = true;
-            return;
-        }
-        this.$.projName.removeAttribute("invalid");
-        this.isInvalidName = false;
-        if (!this.isInvalidName && !this.isInvalidPath) {
-            this.$.tip.style.display = "none";
-        }
-    },
-
     buildAction: function () {
-        if (!this.isInvalidName && !this.isInvalidPath) {
+        if ( this.isProjectNameValid && this.isBuildPathValid ) {
             this.$.tip.style.display = "none";
-            this.getBuildList();
             this.saveConfig();
 
             // TODO build Action
-
-        }else {
+            var buildList = this.settings.sceneList.filter( function (item) {
+                return !item.ignore;
+            } );
+            // TODO: @Jare, We've provide two parameter to help you: this.settings, buildList
+            // TODO: @Jare the buildList can be calculate by yourself, so may be you can remove it afterward.
+            Fire.warn('@Jare please fill building code here...');
+        }
+        else {
             this.$.tip.style.display = "block";
             this.$.tip.animate([
                 { color: "white" },
@@ -177,15 +162,15 @@ Polymer({
         }
     },
 
-    buildBtnMouseOver: function (event) {
-        this.onMouseOn = true;
+    buildButtonHoverInAction: function (event) {
+        this.hoverBuildButton = true;
     },
 
-    buildBtnMouseOut: function () {
-        this.onMouseOn = false;
+    buildButtonHoverOutAction: function () {
+        this.hoverBuildButton = false;
     },
 
-    cancelAction: function () {
+    closeAction: function () {
         window.close();
     },
 });
