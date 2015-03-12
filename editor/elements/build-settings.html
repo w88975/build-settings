@@ -13,19 +13,38 @@
     <div class="section">
         <div flex-row class="prop">
             <fire-ui-label flex-1>Project Name</fire-ui-label>
-            <fire-ui-text-input id="projName" on-blur="{{projectNameBlurAction}}" placeholder="the project name" flex-2 value="{{settings.projectName}}" ></fire-ui-text-input>
+            <fire-ui-text-input
+                value="{{settings.projectName}}"
+                invalid="{{!isProjectNameValid}}"
+                placeholder="Project Name"
+                flex-2
+                ></fire-ui-text-input>
+        </div>
+
+        <div flex-row class="prop">
+            <fire-ui-label flex-1>Build Path</fire-ui-label>
+            <div flex-row flex-2>
+                <fire-ui-text-input
+                    value="{{settings.buildPath}}"
+                    invalid="{{!isBuildPathValid}}"
+                    placeholder="Building Path"
+                    flex-4
+                    >
+                    </fire-ui-text-input>
+                <fire-ui-button style="margin-left: 10px" on-click="{{chooseDistPath}}" >Open...</fire-ui-button>
+            </div>
         </div>
 
         <div flex-row class="prop">
             <fire-ui-label id="test" flex-1>Start scene</fire-ui-label>
-            <fire-ui-select on-select="{{selectChanged}}" flex-2 value="{{settings.defaultScene}}" options={{settings.sceneList}}></fire-ui-select>
+            <fire-ui-select flex-2 value="{{settings.defaultScene}}" options={{settings.sceneList}}></fire-ui-select>
         </div>
 
-        <div flex-row class="prop itemBox">
+        <div flex-row class="prop item-box">
             <fire-ui-label  flex-1>Scenes</fire-ui-label>
             <div flex-2 class="items">
                 <template repeat="{{item in settings.sceneList}}">
-                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.noignore}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
+                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{!item.ignore}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
                 </template>
             </div>
         </div>
@@ -37,29 +56,21 @@
 
         <div flex-row class="prop">
             <fire-ui-label flex-1>Platform</fire-ui-label>
-            <fire-ui-select flex-2 value="{{settings.defaultPlatform}}" options={{platform}}></fire-ui-select>
+            <fire-ui-select flex-2 value="{{settings.platform}}" options={{platformList}}></fire-ui-select>
         </div>
 
         <div flex-row class="prop">
             <fire-ui-label flex-1>Platform Config</fire-ui-label>
-            <fire-ui-select flex-2 value="{{settings.defaultPlatformConfig}}" options={{platformConfig}}></fire-ui-select>
-        </div>
-
-        <div flex-row class="prop">
-            <fire-ui-label flex-1>Build Path</fire-ui-label>
-            <div flex-row flex-2>
-                <fire-ui-text-input id="path" on-blur="{{pathInputBlurAction}}" placeholder="building path" value="{{settings.defaultBuildPath}}" flex-4></fire-ui-text-input>
-                <fire-ui-button style="margin-left: 10px" on-click="{{chooseDistPath}}" >Open...</fire-ui-button>
-            </div>
+            <fire-ui-select flex-2 value="{{settings.platformConfig}}" options={{platformConfigList}}></fire-ui-select>
         </div>
 
     </div>
     <div class="btn-group">
-        <button class="green" on-mouseover="{{buildBtnMouseOver}}" on-mouseout="{{buildBtnMouseOut}}" on-click="{{buildAction}}">
-            <span class="{{onMouseOn? 'hide':''}}">Build</span>
-            <li class="fa fa-download {{!onMouseOn? 'hide':''}}"></li>
+        <button class="green" on-mouseenter="{{buildButtonHoverInAction}}" on-mouseleave="{{buildButtonHoverOutAction}}" on-click="{{buildAction}}">
+            <span class="{{hoverBuildButton? 'hide':''}}">Build</span>
+            <li class="fa fa-download {{!hoverBuildButton? 'hide':''}}"></li>
         </button>
-        <button class="red" on-click="{{cancelAction}}">Cancel</button>
+        <button class="red" on-click="{{closeAction}}">Close</button>
     </div>
 </template>
 <script type="text/javascript" src="build-settings.js"></script>
