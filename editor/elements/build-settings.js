@@ -83,7 +83,7 @@ Polymer({
 
     selectChanged: function (event) {
         for (var i = 0; i < this.settings.sceneList.length; ++i) {
-            if (this.settings.sceneList[i].value === this.defaultScene) {
+            if (this.settings.sceneList[i].value === this.settings.defaultScene) {
                 this.settings.sceneList[i].noignore = true;
             }
         }
