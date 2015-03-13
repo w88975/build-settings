@@ -76,6 +76,10 @@ Polymer({
         }.bind(this) );
     },
 
+    detached: function () {
+        this.ipc.clear();
+    },
+
     defaultSceneChanged: function () {
         for (var i = 0; i < this.settings.sceneList.length; ++i) {
             if (this.settings.sceneList[i].value === this.settings.defaultScene) {
