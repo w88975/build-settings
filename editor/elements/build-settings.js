@@ -65,8 +65,8 @@ Polymer({
     },
 
     attached: function () {
-        Fire.sendToCore('asset-db:build-settings:getLibrarylist');
-        this.ipc.on('asset-db:build-settings:SceneList', function ( results ) {
+        Fire.sendToCore('build-settings:query-scenes');
+        this.ipc.on('build-settings:query-scenes-results', function ( results ) {
             this.settings.sceneList = [];
             for ( var i = 0; i < results.length; ++i ) {
                 var item = results[i];

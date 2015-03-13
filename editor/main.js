@@ -6,7 +6,7 @@ module.exports = {
             context.openWindow('build-settings');
         });
 
-        context.on('asset-db:build-settings:getLibrarylist', function () {
+        context.on('build-settings:query-scenes', function () {
             var results = [];
             for ( var p in Fire.AssetDB._pathToUuid ) {
                 var url = Fire.AssetDB._url(p);
@@ -14,7 +14,7 @@ module.exports = {
                     results.push({ url: url, uuid: Fire.AssetDB._pathToUuid[p] });
                 }
             }
-            Fire.sendToPlugin( 'asset-db:build-settings:SceneList', results );
+            Fire.sendToPlugin( 'build-settings:query-scenes-results', results );
         });
     },
     unload: function (context) {
