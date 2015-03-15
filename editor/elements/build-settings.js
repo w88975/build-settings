@@ -5,13 +5,12 @@ var Path = require('fire-path');
 
 Polymer({
     platformList: [
-        {name:"PC",value:"PC"},
-        {name:"Mobile",value:"Mobile"},
-    ],
-
-    platformConfigList: [
-        {name:"Builder.js",value:"Builder.js"},
-        {name:"Builder.Platform",value:"Builder.Platform"},
+        {
+            name: "Web Mobile", value: "web-mobile"
+        },
+        {
+            name: "Web Desktop", value: "web-desktop"
+        },
     ],
 
     observe: {
@@ -32,8 +31,7 @@ Polymer({
             defaultScene: "",
             sceneList: [],
             isDebug: true,
-            platform: "Mobile",
-            platformConfig: "Builder.Platform",
+            platform: "web-mobile",
             buildPath: "",
         };
 
@@ -47,7 +45,6 @@ Polymer({
                 this.settings.defaultScene = data.defaultScene;
                 this.settings.buildPath = data.buildPath;
                 this.settings.platform = data.platform;
-                this.settings.platformConfig = data.platformConfig;
                 this.settings.projectName = data.projectName;
                 this.settings.sceneList = data.sceneList;
                 loadFile = true;
@@ -145,13 +142,19 @@ Polymer({
             this.$.tip.style.display = "none";
             this.saveConfig();
 
-            // TODO build Action
-            var buildList = this.settings.sceneList.filter( function (item) {
+            var buildUuidList = this.settings.sceneList.filter( function (item) {
                 return !item.ignore;
-            } );
-            // TODO: @Jare, We've provide two parameter to help you: this.settings, buildList
-            // TODO: @Jare the buildList can be calculate by yourself, so may be you can remove it afterward.
-            Fire.warn('@Jare please fill building code here...');
+            }).map(function (item) {
+                return item.value;
+            });
+
+            // move default scene to first
+            var firstSceneIndex = buildUuidList.indexOf(this.settings.defaultScene);
+            var toSwap = buildUuidList[0];
+            buildUuidList[0] = buildUuidList[firstSceneIndex];
+            buildUuidList[firstSceneIndex] = toSwap;
+
+            Fire.sendToCore('build-project', this.settings.platform, this.settings.buildPath, buildUuidList, this.settings);
         }
         else {
             this.$.tip.style.display = "block";
