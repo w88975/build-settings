@@ -17,6 +17,7 @@ Polymer({
         'settings.defaultScene': 'defaultSceneChanged',
         'settings.buildPath': 'buildPathChanged',
         'settings.projectName': 'projectNameChanged',
+        'settings.platform': 'platformChanged',
     },
 
     isProjectNameValid: true,
@@ -71,7 +72,7 @@ Polymer({
             this.settings.sceneList = [];
             for ( var i = 0; i < results.length; ++i ) {
                 var item = results[i];
-                this.settings.sceneList.push( { name: item.url, value: item.uuid, unignore: true, } );
+                this.settings.sceneList.push( { name: item.url, value: item.uuid, checked: true, } );
             }
             this.settings.defaultScene = this.settings.sceneList[0].value;
         }.bind(this) );
@@ -84,13 +85,17 @@ Polymer({
     defaultSceneChanged: function () {
         for (var i = 0; i < this.settings.sceneList.length; ++i) {
             if (this.settings.sceneList[i].value === this.settings.defaultScene) {
-                this.settings.sceneList[i].unignore = true;
+                this.settings.sceneList[i].checked = true;
             }
         }
     },
 
     buildPathChanged: function () {
-        this.isBuildPathValid = Fs.isDirSync(this.settings.buildPath);
+        if (this.settings.buildPath) {
+            this.isBuildPathValid = true;
+            return;
+        }
+        this.isBuildPathValid = false;
     },
 
     projectNameChanged: function () {
@@ -100,6 +105,15 @@ Polymer({
         }
 
         this.isProjectNameValid = false;
+    },
+
+    platformChanged: function () {
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+        if (this.settings.platform === "web-mobile") {
+            this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
+        }else {
+            this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
+        }
     },
 
     chooseDistPath: function () {
@@ -152,7 +166,7 @@ Polymer({
             this.saveConfig();
 
             var buildUuidList = this.settings.sceneList.filter( function (item) {
-                return item.unignore;
+                return item.checked;
             }).map(function (item) {
                 return item.value;
             });
