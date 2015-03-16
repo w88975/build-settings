@@ -22,6 +22,11 @@
         </div>
 
         <div flex-row class="prop">
+            <fire-ui-label flex-1>Platform</fire-ui-label>
+            <fire-ui-select flex-2 value="{{settings.platform}}" options={{platformList}}></fire-ui-select>
+        </div>
+
+        <div flex-row class="prop">
             <fire-ui-label flex-1>Build Path</fire-ui-label>
             <div flex-row flex-2>
                 <fire-ui-text-input
@@ -44,14 +49,9 @@
             <fire-ui-label  flex-1>Scenes In Build</fire-ui-label>
             <div flex-2 class="items">
                 <template repeat="{{item in settings.sceneList}}">
-                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{!item.ignore}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
+                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.checked}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
                 </template>
             </div>
-        </div>
-
-        <div flex-row class="prop">
-            <fire-ui-label flex-1>Platform</fire-ui-label>
-            <fire-ui-select flex-2 value="{{settings.platform}}" options={{platformList}}></fire-ui-select>
         </div>
 
         <div flex-row class="prop">
