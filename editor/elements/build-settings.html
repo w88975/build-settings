@@ -44,7 +44,7 @@
             <fire-ui-label  flex-1>Scenes In Build</fire-ui-label>
             <div flex-2 class="items">
                 <template repeat="{{item in settings.sceneList}}">
-                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{!item.ignore}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
+                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.unignore}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
                 </template>
             </div>
         </div>
