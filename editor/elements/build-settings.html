@@ -47,16 +47,27 @@
 
         <div flex-row class="prop item-box">
             <fire-ui-label  flex-1>Scenes In Build</fire-ui-label>
-            <div flex-2 class="items">
-                <template repeat="{{item in settings.sceneList}}">
-                    <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.checked}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
-                </template>
+            <div flex-2 class="items" style="border: none">
+                <div class="box-border">
+                    <template repeat="{{item in settings.sceneList}}">
+                        <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.checked}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
+                    </template>
+                </div>
             </div>
         </div>
 
         <div flex-row class="prop">
             <fire-ui-label flex-1>Debug Mode</fire-ui-label>
             <fire-ui-checkbox flex-2 value="{{settings.isDebug}}"></fire-ui-checkbox>
+        </div>
+
+        <div flex-row class="prop">
+            <fire-ui-label flex-1>Preview</fire-ui-label>
+            <div flex-row flex-2>
+                <span class="link" flex-4 on-click="{{previewAction}}">http://localhost:7456</span>
+                <fire-ui-button on-click="{{previewAction}}">Open in Browser</fire-ui-button>
+            </div>
+
         </div>
 
     </div>
