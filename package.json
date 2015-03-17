@@ -17,7 +17,7 @@
                 "options": {
                     "title": "Build Settings",
                     "width": 500,
-                    "height": 500,
+                    "height": 530,
                     "min-width": 500,
                     "min-height": 500,
                     "resizable": false,

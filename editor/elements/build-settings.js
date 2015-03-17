@@ -200,6 +200,11 @@ Polymer({
         this.hoverBuildButton = false;
     },
 
+    previewAction: function () {
+        var shell = Remote.require('shell');
+        shell.openExternal('http://localhost:7456');
+    },
+
     closeAction: function () {
         window.close();
     },
