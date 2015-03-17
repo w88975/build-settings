@@ -47,7 +47,7 @@
 
         <div flex-row class="prop item-box">
             <fire-ui-label  flex-1>Scenes In Build</fire-ui-label>
-            <div flex-2 class="items" style="border: none">
+            <div flex-2 class="items">
                 <div class="box-border">
                     <template repeat="{{item in settings.sceneList}}">
                         <fire-ui-checkbox disabled="{{item.value == settings.defaultScene}}" on-click="{{itemClickAction}}" value="{{item.checked}}" id="{{item.value}}">{{item.name}}</fire-ui-checkbox>
