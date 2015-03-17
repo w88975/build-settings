@@ -2,7 +2,6 @@ var Remote = require('remote');
 var Url = require('fire-url');
 var Fs = require('fire-fs');
 var Path = require('fire-path');
-var shell = Remote.require('shell');
 
 Polymer({
     platformList: [
@@ -202,6 +201,7 @@ Polymer({
     },
 
     previewAction: function () {
+        var shell = Remote.require('shell');
         shell.openExternal('http://localhost:7456');
     },
 
