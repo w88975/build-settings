@@ -40,6 +40,7 @@ Polymer({
         this.settingPath = Path.join( projectPath, 'settings' ) + "/build-settings.json";
 
         var loadFile = false;
+        this.getScenes();
         this.loadConfig(function (data,err,errMsg) {
             if (!err) {
                 this.settings.isDebug = data.isDebug;
@@ -47,7 +48,6 @@ Polymer({
                 this.settings.buildPath = data.buildPath;
                 this.settings.platform = data.platform;
                 this.settings.projectName = data.projectName;
-                this.settings.sceneList = data.sceneList;
                 loadFile = true;
             }
             else {
@@ -75,6 +75,17 @@ Polymer({
                 this.settings.sceneList.push( { name: item.url, value: item.uuid, checked: true, } );
             }
             this.settings.defaultScene = this.settings.sceneList[0].value;
+        }.bind(this) );
+    },
+
+    getScenes: function () {
+        Fire.sendToCore('build-settings:query-scenes');
+        this.ipc.on('build-settings:query-scenes-results', function ( results ) {
+            this.settings.sceneList = [];
+            for ( var i = 0; i < results.length; ++i ) {
+                var item = results[i];
+                this.settings.sceneList.push( { name: item.url, value: item.uuid, checked: true, } );
+            }
         }.bind(this) );
     },
 
