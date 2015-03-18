@@ -26,8 +26,6 @@ Polymer({
     hoverBuildButton: false,
 
     created: function () {
-        this.ipc = new Fire.IpcListener();
-
         this.settings = {
             projectName: "",
             defaultScene: "",
@@ -40,58 +38,37 @@ Polymer({
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
         this.settingPath = Path.join( projectPath, 'settings' ) + "/build-settings.json";
 
-        var loadFile = false;
-        this.getScenes();
-        this.loadConfig(function (data,err,errMsg) {
+        this.settings.projectName = Path.basename(projectPath);
+        if ( this.settings.platform === "web-mobile" ) {
+            this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
+        }
+        else {
+            this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
+        }
+
+        this.loadConfig(function ( err, data ) {
             if (!err) {
                 this.settings.isDebug = data.isDebug;
                 this.settings.defaultScene = data.defaultScene;
                 this.settings.buildPath = data.buildPath;
                 this.settings.platform = data.platform;
                 this.settings.projectName = data.projectName;
-                loadFile = true;
-            }
-            else {
-                loadFile = false;
             }
 
+            Fire.sendToCore('build-settings:query-scenes');
         }.bind(this));
-
-        if ( !loadFile ) {
-            this.settings.projectName = Path.basename(projectPath);
-            if (this.settings.platform === "web-mobile") {
-                this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
-            }else {
-                this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
-            }
-        }
     },
 
-    attached: function () {
-        Fire.sendToCore('build-settings:query-scenes');
-        this.ipc.on('build-settings:query-scenes-results', function ( results ) {
-            this.settings.sceneList = [];
-            for ( var i = 0; i < results.length; ++i ) {
-                var item = results[i];
-                this.settings.sceneList.push( { name: item.url, value: item.uuid, checked: true, } );
-            }
+    ipcQuerySceneResults: function ( event ) {
+        var results = event.detail.results;
+
+        this.settings.sceneList = results.map( function ( item ) {
+            return { name: item.url, value: item.uuid, checked: true };
+        });
+
+        if ( this.settings.sceneList.indexOf(this.settings.defaultScene) === -1 ) {
             this.settings.defaultScene = this.settings.sceneList[0].value;
-        }.bind(this) );
-    },
-
-    getScenes: function () {
-        Fire.sendToCore('build-settings:query-scenes');
-        this.ipc.on('build-settings:query-scenes-results', function ( results ) {
-            this.settings.sceneList = [];
-            for ( var i = 0; i < results.length; ++i ) {
-                var item = results[i];
-                this.settings.sceneList.push( { name: item.url, value: item.uuid, checked: true, } );
-            }
-        }.bind(this) );
-    },
-
-    detached: function () {
-        this.ipc.clear();
+        }
     },
 
     defaultSceneChanged: function () {
@@ -158,17 +135,18 @@ Polymer({
         var exists = Fs.existsSync(this.settingPath);
         if (!exists)
             return;
+
         Fs.readFile(this.settingPath, 'utf8', function ( err, data ) {
             try {
                 data = JSON.parse(data);
             }
             catch (e) {
                 Fire.error(e);
-                callback(data,true,e);
+                callback(e);
                 return;
             }
 
-            callback(data,false);
+            callback(null,data);
         });
     },
 
