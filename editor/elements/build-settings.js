@@ -48,6 +48,7 @@ Polymer({
                 this.settings.defaultScene = data.defaultScene;
                 this.settings.buildPath = data.buildPath;
                 this.settings.platform = data.platform;
+                this.settings.sceneList = data.sceneList;
                 this.settings.projectName = data.projectName;
             }
 
