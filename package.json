@@ -11,7 +11,7 @@
                 "message": "build-settings:open"
             }
         ],
-        "windows": {
+        "panels": {
             "default": {
                 "type": "fixed-size",
                 "view": "editor/build-settings.html",

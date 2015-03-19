@@ -3,7 +3,7 @@ var Url = require('fire-url');
 module.exports = {
     load: function (plugin) {
         plugin.on('build-settings:open', function () {
-            plugin.openWindow('default');
+            plugin.openPanel('default');
         });
 
         plugin.on('build-settings:query-scenes', function () {

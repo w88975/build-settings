@@ -6,12 +6,8 @@ var Shell = Remote.require('shell');
 
 Polymer({
     platformList: [
-        {
-            name: "Web Mobile", value: "web-mobile"
-        },
-        {
-            name: "Web Desktop", value: "web-desktop"
-        },
+        { name: "Web Mobile", value: "web-mobile" },
+        { name: "Web Desktop", value: "web-desktop" },
     ],
 
     observe: {
