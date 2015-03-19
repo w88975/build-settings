@@ -128,17 +128,18 @@ Polymer({
     },
 
     loadConfig: function (callback) {
-        var exists = Fs.existsSync(this.settingPath);
-        if (!exists)
-            return;
-
         Fs.readFile(this.settingPath, 'utf8', function ( err, data ) {
+            if ( err ) {
+                callback(err);
+                return;
+            }
+
             try {
                 data = JSON.parse(data);
             }
-            catch (e) {
-                Fire.error(e);
-                callback(e);
+            catch (err2) {
+                Fire.error(err2.message);
+                callback(err2);
                 return;
             }
 
