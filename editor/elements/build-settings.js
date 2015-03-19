@@ -194,7 +194,7 @@ Polymer({
     },
 
     showInFinder: function () {
-        Shell.showItemInFolder(this.settings.buildPath);
+        Shell.showItemInFolder(this.settings.buildPath.replace(/\\/g,"/"));
         Shell.beep();
     },
 
