@@ -11,10 +11,11 @@ Polymer({
     ],
 
     observe: {
-        'settings.defaultScene': 'defaultSceneChanged',
-        'settings.buildPath': 'buildPathChanged',
         'settings.projectName': 'projectNameChanged',
+        'settings.defaultScene': 'defaultSceneChanged',
         'settings.platform': 'platformChanged',
+        'settings.isDebug': 'isDebugChanged',
+        'settings.buildPath': 'buildPathChanged',
     },
 
     isProjectNameValid: true,
@@ -22,38 +23,21 @@ Polymer({
     hoverBuildButton: false,
 
     created: function () {
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+        var projectName = Path.basename(projectPath);
+
         this.settings = {
-            projectName: "",
+            projectName: projectName,
             defaultScene: "",
             sceneList: [],
             isDebug: true,
             platform: "web-mobile",
-            buildPath: "",
+            buildPath: Path.join(projectPath, "mobile-" + projectName),
         };
+    },
 
-        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        this.settingPath = Path.join( projectPath, 'settings' ) + "/build-settings.json";
-
-        this.settings.projectName = Path.basename(projectPath);
-        if ( this.settings.platform === "web-mobile" ) {
-            this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
-        }
-        else {
-            this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
-        }
-
-        this.loadConfig(function ( err, data ) {
-            if (!err) {
-                this.settings.isDebug = data.isDebug;
-                this.settings.defaultScene = data.defaultScene;
-                this.settings.buildPath = data.buildPath;
-                this.settings.platform = data.platform;
-                this.settings.sceneList = data.sceneList;
-                this.settings.projectName = data.projectName;
-            }
-
-            Fire.sendToCore('build-settings:query-scenes');
-        }.bind(this));
+    domReady: function () {
+        Fire.sendToCore('build-settings:query-scenes');
     },
 
     ipcQuerySceneResults: function ( event ) {
@@ -66,6 +50,7 @@ Polymer({
         if ( this.settings.sceneList.indexOf(this.settings.defaultScene) === -1 ) {
             this.settings.defaultScene = this.settings.sceneList[0].value;
         }
+        this.settings.save();
     },
 
     defaultSceneChanged: function () {
@@ -74,9 +59,11 @@ Polymer({
                 this.settings.sceneList[i].checked = true;
             }
         }
+        this.settings.save();
     },
 
     buildPathChanged: function () {
+        this.settings.save();
         if (this.settings.buildPath) {
             this.isBuildPathValid = true;
             return;
@@ -85,6 +72,7 @@ Polymer({
     },
 
     projectNameChanged: function () {
+        this.settings.save();
         if ( this.settings.projectName ) {
             this.isProjectNameValid = true;
             return;
@@ -95,11 +83,17 @@ Polymer({
 
     platformChanged: function () {
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        if (this.settings.platform === "web-mobile") {
+        if ( this.settings.platform === "web-mobile" ) {
             this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
-        }else {
+        }
+        else {
             this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
         }
+        this.settings.save();
+    },
+
+    isDebugChanged: function () {
+        this.settings.save();
     },
 
     chooseDistPath: function () {
@@ -110,48 +104,17 @@ Polymer({
             if (res) {
                 if (this.settings.platform === "web-mobile") {
                     this.settings.buildPath = res + "/mobile-" + Path.basename(projectPath);
-                }else {
+                }
+                else {
                     this.settings.buildPath = res + "/desktop-" + Path.basename(projectPath);
                 }
-
             }
         }.bind(this));
-    },
-
-    saveConfig: function () {
-        var settingsJson = JSON.stringify(this.settings, null, 2);
-        Fs.writeFile(this.settingPath, settingsJson, 'utf8', function ( err ) {
-            if ( err ) {
-                Fire.error( err.message );
-                return;
-            }
-        }.bind(this));
-    },
-
-    loadConfig: function (callback) {
-        Fs.readFile(this.settingPath, 'utf8', function ( err, data ) {
-            if ( err ) {
-                callback(err);
-                return;
-            }
-
-            try {
-                data = JSON.parse(data);
-            }
-            catch (err2) {
-                Fire.error(err2.message);
-                callback(err2);
-                return;
-            }
-
-            callback(null,data);
-        });
     },
 
     buildAction: function () {
         if ( this.isProjectNameValid && this.isBuildPathValid ) {
             this.$.tip.style.display = "none";
-            this.saveConfig();
 
             var buildUuidList = this.settings.sceneList.filter( function (item) {
                 return item.checked;
