@@ -194,6 +194,9 @@ Polymer({
     },
 
     showInFinder: function () {
+        if (!Fs.existsSync(this.settings.buildPath)) {
+            Fire.warn("'"+this.settings.buildPath + "' not exists!");
+        }
         Shell.showItemInFolder(Path.normalize(this.settings.buildPath));
         Shell.beep();
     },
