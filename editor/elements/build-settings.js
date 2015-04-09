@@ -6,8 +6,8 @@ var Shell = Remote.require('shell');
 
 Polymer({
     platformList: [
-        { name: "Web Mobile", value: "web-mobile" },
-        { name: "Web Desktop", value: "web-desktop" },
+        { name: 'Web Mobile', value: 'web-mobile' },
+        { name: 'Web Desktop', value: 'web-desktop' },
     ],
 
     observe: {
@@ -28,11 +28,11 @@ Polymer({
 
         this.settings = {
             projectName: projectName,
-            defaultScene: "",
+            defaultScene: '',
             sceneList: [],
             isDebug: true,
-            platform: "web-mobile",
-            buildPath: Path.join(projectPath, "mobile-" + projectName),
+            platform: 'web-mobile',
+            buildPath: Path.join(projectPath, 'mobile-' + projectName),
         };
     },
 
@@ -83,11 +83,11 @@ Polymer({
 
     platformChanged: function () {
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        if ( this.settings.platform === "web-mobile" ) {
-            this.settings.buildPath = projectPath + "/mobile-" + this.settings.projectName;
+        if ( this.settings.platform === 'web-mobile' ) {
+            this.settings.buildPath = projectPath + '/mobile-' + this.settings.projectName;
         }
         else {
-            this.settings.buildPath = projectPath + "/desktop-" + this.settings.projectName;
+            this.settings.buildPath = projectPath + '/desktop-' + this.settings.projectName;
         }
         this.settings.save();
     },
@@ -102,11 +102,11 @@ Polymer({
 
         dialog.showOpenDialog({ defaultPath: projectPath, properties: ['openDirectory']},function (res) {
             if (res) {
-                if (this.settings.platform === "web-mobile") {
-                    this.settings.buildPath = res + "/mobile-" + Path.basename(projectPath);
+                if (this.settings.platform === 'web-mobile') {
+                    this.settings.buildPath = res + '/mobile-' + Path.basename(projectPath);
                 }
                 else {
-                    this.settings.buildPath = res + "/desktop-" + Path.basename(projectPath);
+                    this.settings.buildPath = res + '/desktop-' + Path.basename(projectPath);
                 }
             }
         }.bind(this));
@@ -114,7 +114,7 @@ Polymer({
 
     buildAction: function () {
         if ( this.isProjectNameValid && this.isBuildPathValid ) {
-            this.$.tip.style.display = "none";
+            this.$.tip.style.display = 'none';
 
             var buildUuidList = this.settings.sceneList.filter( function (item) {
                 return item.checked;
@@ -131,12 +131,12 @@ Polymer({
             Fire.sendToCore('build-project', this.settings.platform, this.settings.buildPath, buildUuidList, this.settings);
         }
         else {
-            this.$.tip.style.display = "block";
+            this.$.tip.style.display = 'block';
             this.$.tip.animate([
-                { color: "white" },
-                { color: "red" },
-                { color: "white" },
-                { color: "red" },
+                { color: 'white' },
+                { color: 'red' },
+                { color: 'white' },
+                { color: 'red' },
             ], {
                 duration: 300
             });
@@ -158,7 +158,7 @@ Polymer({
 
     showInFinder: function () {
         if (!Fs.existsSync(this.settings.buildPath)) {
-            Fire.warn("'"+this.settings.buildPath + "' not exists!");
+            Fire.warn( '%s not exists!', this.settings.buildPath);
             return;
         }
         Shell.showItemInFolder(Path.normalize(this.settings.buildPath));
