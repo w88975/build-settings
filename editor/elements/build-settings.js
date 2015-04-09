@@ -37,7 +37,7 @@ Polymer({
     },
 
     domReady: function () {
-        Fire.sendToCore('build-settings:query-scenes');
+        Editor.sendToCore('build-settings:query-scenes');
     },
 
     ipcQuerySceneResults: function ( event ) {
@@ -128,7 +128,7 @@ Polymer({
             buildUuidList[0] = buildUuidList[firstSceneIndex];
             buildUuidList[firstSceneIndex] = toSwap;
 
-            Fire.sendToCore('build-project', this.settings.platform, this.settings.buildPath, buildUuidList, this.settings);
+            Editor.sendToCore('build-project', this.settings.platform, this.settings.buildPath, buildUuidList, this.settings);
         }
         else {
             this.$.tip.style.display = "block";
