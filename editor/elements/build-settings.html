@@ -30,15 +30,22 @@
         <div flex-row class="prop">
             <fire-ui-label flex-1>Build Path</fire-ui-label>
             <div flex-row flex-2>
-                <fire-ui-text-input
-                    value="{{settings.buildPath}}"
-                    invalid="{{!isBuildPathValid}}"
-                    placeholder="Building Path"
-                    flex-4
-                    >
+                    <fire-ui-text-input
+                        value="{{settings.buildPath}}"
+                        invalid="{{!isBuildPathValid}}"
+                        placeholder="Building Path"
+                        flex-4
+                        >
                     </fire-ui-text-input>
-                <fire-ui-button style="margin-left: 5px" on-click="{{chooseDistPath}}" >Open...</fire-ui-button>
-                <fire-ui-button style="margin-left: 5px" on-click="{{showInFinder}}" >Show in {{!Fire.isDarwin ? 'Finder':'Explorer'}}</fire-ui-button>
+                    <fire-ui-button style="margin-left: 5px" on-click="{{chooseDistPath}}" >...</fire-ui-button>
+            </div>
+        </div>
+
+        <div flex-row class="prop">
+            <fire-ui-label flex-1>Show in {{finderOrExplorer}}</fire-ui-label>
+            <div flex-row flex-2>
+                <span flex-4 class="path">{{settings.buildPath}}</span>
+                <fire-ui-button on-click="{{showInFinder}}" >Show in {{finderOrExplorer}}</fire-ui-button>
             </div>
         </div>
 

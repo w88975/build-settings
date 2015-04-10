@@ -21,6 +21,7 @@ Polymer({
     isProjectNameValid: true,
     isBuildPathValid: true,
     hoverBuildButton: false,
+    finderOrExplorer: Fire.isDarwin ? 'Finder':'Explorer',
 
     created: function () {
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
@@ -83,11 +84,11 @@ Polymer({
 
     platformChanged: function () {
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        if ( this.settings.platform === 'web-mobile' ) {
-            this.settings.buildPath = projectPath + '/mobile-' + this.settings.projectName;
+        if ( this.settings.platform === "web-mobile" ) {
+            this.settings.buildPath = Path.join(projectPath, + "/mobile-" + this.settings.projectName);
         }
         else {
-            this.settings.buildPath = projectPath + '/desktop-' + this.settings.projectName;
+            this.settings.buildPath = Path.join(projectPath, + "/desktop-" + this.settings.projectName);
         }
         this.settings.save();
     },
